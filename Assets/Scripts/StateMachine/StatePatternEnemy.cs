@@ -5,8 +5,8 @@ using UnityEngine.AI;
 
 public class StatePatternEnemy : MonoBehaviour
 {
-    public float sarchturnspeed = 120f;
-    public float searchingduration = 4f;
+    public float searchingTurnSpeed = 120f;
+    public float searchingDuration = 4f;
     public float sightRange = 20f;
     public Transform[] wayPoints;
     public Transform eyes;
@@ -37,12 +37,19 @@ public class StatePatternEnemy : MonoBehaviour
 
 
     // Use this for initialization
-    void Start () {
-		
+    void Start ()
+    {
+        currentState = patrolState;
 	}
 	
 	// Update is called once per frame
-	void Update () {
-		
+	void Update ()
+    {
+        currentState.UpdateState();
 	}
+
+    private void OnTriggerEnter(Collider other)
+    {
+        currentState.OnTriggerEnter(other);
+    }
 }

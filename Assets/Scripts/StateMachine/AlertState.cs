@@ -5,6 +5,16 @@ using UnityEngine;
 
 public class AlertState : IEnemyState
 {
+    private StatePatternEnemy statePatternEnemy;
+    private readonly StatePatternEnemy enemy;
+    private float searchTimer;
+    private int nextWayPoint;
+
+    public AlertState(StatePatternEnemy statePatternEnemy)
+    {
+        enemy = statePatternEnemy;
+    }
+
     public void OnTriggerEnter(Collider other)
     {
         throw new NotImplementedException();
@@ -17,16 +27,40 @@ public class AlertState : IEnemyState
 
     public void ToChaseState()
     {
-        throw new NotImplementedException();
+        enemy.currentState = enemy.chaseStaete;
+        searchTimer = 0f;
     }
 
     public void ToPatrolState()
     {
-        throw new NotImplementedException();
+        enemy.currentState = enemy.patrolState;
+        searchTimer = 0f;
     }
 
-    public void Update()
+    public void UpdateState()
     {
         throw new NotImplementedException();
     }
+
+    private void Look()
+    {
+        RaycastHit hit;
+        if (Physics.Raycast(enemy.eyes.transform.position, enemy.eyes.transform.forward, out hit, enemy.sightRange) && hit.collider.CompareTag("Player"))
+        {
+            enemy.chaseTarget = hit.transform;
+            ToChaseState();
+        }
+    }
+
+    private void Search()
+    {
+        enemy.meshrendererFlag.material.color = Color.yellow;
+        enemy.navMeshAgent.Stop();
+        enemy.transform.Rotate(0, enemy.searchingTurnSpeed * Time.deltaTime, 0);
+        searchTimer += Time.deltaTime;
+
+        if (searchTimer >= enemy.searchingDuration)
+            ToPatrolState();
+    }
+
 }

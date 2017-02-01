@@ -562,7 +562,7 @@ PlayerSettings:
     Game_Performance: 0
     Hub: 0
     Purchasing: 0
-    UNet: 0
+    UNet: 1
     Unity_Ads: 0
   cloudProjectId: a55f7705-2c61-4ccf-b924-ae2782603cc2
   projectName: Unity-Interfaces

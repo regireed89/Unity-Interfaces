@@ -6,34 +6,56 @@ using UnityEngine;
 public class ChaseState : IEnemyState
 {
     private StatePatternEnemy statePatternEnemy;
-
+    private readonly StatePatternEnemy enemy;
     public ChaseState(StatePatternEnemy statePatternEnemy)
     {
-        this.statePatternEnemy = statePatternEnemy;
+        enemy = statePatternEnemy;
     }
 
     public void OnTriggerEnter(Collider other)
     {
-        throw new NotImplementedException();
+        
     }
 
     public void ToAlertState()
     {
-        throw new NotImplementedException();
+        enemy.currentState = enemy.alertState;
     }
 
     public void ToChaseState()
     {
-        throw new NotImplementedException();
+       
     }
 
     public void ToPatrolState()
     {
-        throw new NotImplementedException();
+       
     }
 
-    public void Update()
+    public void UpdateState()
     {
-        throw new NotImplementedException();
+        Look();
+        Chase();
+    }
+    private void Look()
+    {
+        RaycastHit hit;
+        Vector3 enemyToTarget = (enemy.chaseTarget.position + enemy.offset) - enemy.eyes.transform.position;
+        if (Physics.Raycast(enemy.eyes.transform.position, enemyToTarget, out hit, enemy.sightRange) && hit.collider.CompareTag("Player"))
+        {
+            enemy.chaseTarget = hit.transform;
+
+        }
+        else
+        {
+            ToAlertState();
+        }
+
+    }
+    private void Chase()
+    {
+        enemy.meshrendererFlag.material.color = Color.red;
+        enemy.navMeshAgent.destination = enemy.chaseTarget.position;
+        enemy.navMeshAgent.Resume();
     }
 }

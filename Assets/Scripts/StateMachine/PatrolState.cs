@@ -5,28 +5,60 @@ using UnityEngine;
 
 public class PatrolState : IEnemyState
 {
+    private StatePatternEnemy statePatternEnemy;
+
+    private readonly StatePatternEnemy enemy;
+    private int nextWayPoint;
+
+    public PatrolState(StatePatternEnemy statePatternEnemy)
+    {
+        this.statePatternEnemy = statePatternEnemy;
+    }
+
     public void OnTriggerEnter(Collider other)
     {
-        throw new NotImplementedException();
+        if (other.gameObject.CompareTag("Player"))
+            ToAlertState();
     }
 
     public void ToAlertState()
     {
-        throw new NotImplementedException();
+        enemy.currentState = enemy.alertState;
     }
 
     public void ToChaseState()
     {
-        throw new NotImplementedException();
+        enemy.currentState = enemy.chaseStaete;
     }
 
     public void ToPatrolState()
     {
+        Debug.Log("Can't transition to same state");
+    }
+
+    public void UpdateState()
+    {
         throw new NotImplementedException();
     }
 
-    public void Update()
+    private void Look()
     {
-        throw new NotImplementedException();
+        RaycastHit hit;
+        if (Physics.Raycast(enemy.eyes.transform.position, enemy.eyes.transform.forward, out hit, enemy.sightRange) && hit.collider.CompareTag("Player"))
+        {
+            enemy.chaseTarget = hit.transform;
+            ToChaseState();
+        }
+    }
+    void Patrol()
+    {
+        enemy.meshrendererFlag.material.color = Color.green;
+        enemy.navMeshAgent.destination = enemy.wayPoints[nextWayPoint].position;
+        enemy.navMeshAgent.Resume();
+
+        if (enemy.navMeshAgent.remainingDistance <= enemy.navMeshAgent.stoppingDistance && enemy.navMeshAgent.pathPending)
+        {
+            nextWayPoint = (nextWayPoint + 1) % enemy.wayPoints.Length;
+        }
     }
 }
